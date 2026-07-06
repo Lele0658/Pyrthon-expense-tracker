@@ -5,7 +5,6 @@ import os
 from datetime import datetime
 from dotenv import load_dotenv
 
-# Fix Unicode encoding for Windows console
 if sys.platform == 'win32':
     import io
     sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
@@ -20,7 +19,7 @@ def get_connection():
         # Ensure required variables are set
         password = os.getenv('DB_PASSWORD')
         if password is None:
-            print("❌ DB_PASSWORD not set in .env file.")
+            print("DB_PASSWORD not set in .env file.")
             return None
 
         connection = mysql.connector.connect(
@@ -31,7 +30,7 @@ def get_connection():
         )
         return connection
     except Error as e:
-        print(f"❌ Error connecting to MySQL: {e}")
+        print(f"Error connecting to MySQL: {e}")
         return None
 
 # --- Setup Table ---
@@ -53,9 +52,9 @@ def init_db():
                 )
             ''')
             conn.commit()
-            print("✅ MySQL Database connected and table ready!\n")
+            print("MySQL Database connected and table ready!\n")
     except Error as e:
-        print(f"❌ Database initialization error: {e}")
+        print(f"Database initialization error: {e}")
     finally:
         conn.close()
 
@@ -75,7 +74,7 @@ def add_expense():
     date_str = input("Enter date (DD/MM/YYYY): ")
     date_obj = parse_date(date_str)
     if not date_obj:
-        print("❌ Invalid date format. Please use DD/MM/YYYY.\n")
+        print("Invalid date format. Please use DD/MM/YYYY.\n")
         conn.close()
         return
 
@@ -83,7 +82,7 @@ def add_expense():
     try:
         amount = float(input("Enter amount: R"))
     except ValueError:
-        print("❌ Invalid amount.\n")
+        print("Invalid amount.\n")
         conn.close()
         return
 
@@ -96,9 +95,9 @@ def add_expense():
                 VALUES (%s, %s, %s, %s)
             ''', (date_obj, category, amount, description))
             conn.commit()
-            print("✅ Expense added successfully!\n")
+            print("Expense added successfully!\n")
     except Error as e:
-        print(f"❌ Error adding expense: {e}")
+        print(f"Error adding expense: {e}")
     finally:
         conn.close()
 
@@ -113,7 +112,7 @@ def view_expenses():
             rows = cursor.fetchall()
 
             if not rows:
-                print("📭 No expenses found.\n")
+                print("No expenses found.\n")
                 return
 
             print("\n" + "-" * 70)
@@ -125,7 +124,7 @@ def view_expenses():
                 print(f"{row[0]:<5} {date_str:<12} {row[2]:<15} R{row[3]:<10.2f} {row[4]}")
             print("-" * 70 + "\n")
     except Error as e:
-        print(f"❌ Error retrieving expenses: {e}")
+        print(f"Error retrieving expenses: {e}")
     finally:
         conn.close()
 
@@ -135,7 +134,7 @@ def delete_expense():
     try:
         exp_id = int(input("Enter the ID of the expense to delete: "))
     except ValueError:
-        print("❌ Invalid ID.\n")
+        print("Invalid ID.\n")
         return
 
     conn = get_connection()
@@ -147,11 +146,11 @@ def delete_expense():
             cursor.execute('DELETE FROM expenses WHERE id = %s', (exp_id,))
             conn.commit()
             if cursor.rowcount > 0:
-                print("🗑️ Expense deleted!\n")
+                print("Expense deleted!\n")
             else:
-                print("❌ ID not found.\n")
+                print("ID not found.\n")
     except Error as e:
-        print(f"❌ Error deleting expense: {e}")
+        print(f"Error deleting expense: {e}")
     finally:
         conn.close()
 
@@ -165,9 +164,9 @@ def show_total():
             cursor.execute('SELECT SUM(amount) FROM expenses')
             total = cursor.fetchone()[0]
             total = total if total else 0.0
-            print(f"\n💰 Total spending: R{total:.2f}\n")
+            print(f"\nTotal spending: R{total:.2f}\n")
     except Error as e:
-        print(f"❌ Error calculating total: {e}")
+        print(f"Error calculating total: {e}")
     finally:
         conn.close()
 
@@ -175,7 +174,7 @@ def show_total():
 def main():
     init_db()
     print("\n" + "="*30)
-    print(" PYTHON EXPENSE TRACKER (MySQL)")
+    print(" PYTHON EXPENSE TRACKER")
     print("="*30)
 
     while True:
@@ -197,10 +196,10 @@ def main():
         elif choice == '4':
             show_total()
         elif choice == '5':
-            print("👋 Goodbye!")
+            print(" Goodbye!")
             break
         else:
-            print("❌ Invalid choice.\n")
+            print("Invalid choice.\n")
 
 if __name__ == "__main__":
     main()
